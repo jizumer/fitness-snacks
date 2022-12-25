@@ -16,11 +16,16 @@ internal class SnacksControllerTest @Autowired constructor(
     val baseUrl = "/snacks"
 
     @Test
-    fun `should return hello world`() {
-        mockMvc.get("$baseUrl/hello")
+    fun `should return the full list of snacks`() {
+
+        mockMvc.get(baseUrl)
             .andExpect {
                 status { isOk() }
-                content {string("Hello world")}
+                jsonPath("$[0].type") {
+                    value(
+                        "squats"
+                    )
+                }
             }
     }
 }
