@@ -6,7 +6,7 @@ import org.springframework.web.bind.annotation.RestController
 
 @RestController
 @RequestMapping("snacks")
-class SnacksController {
+class SnacksController(val snacksService: SnacksService) {
     @GetMapping("")
-    fun getAll() = listOf(Snack("squats", null))
+    fun getAll() = snacksService.findAll()
 }

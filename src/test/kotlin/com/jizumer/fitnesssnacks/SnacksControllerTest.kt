@@ -5,6 +5,7 @@ import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.http.MediaType
+import org.springframework.test.context.jdbc.Sql
 import org.springframework.test.web.servlet.MockMvc
 import org.springframework.test.web.servlet.get
 
@@ -17,6 +18,7 @@ internal class SnacksControllerTest @Autowired constructor(
     val baseUrl = "/snacks"
 
     @Test
+    @Sql("pre_load_snacks.sql")
     fun `should return the full list of snacks`() {
 
         mockMvc.get(baseUrl)
