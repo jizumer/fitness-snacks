@@ -1,7 +1,7 @@
 package com.jizumer.fitnesssnacks
 
 import org.springframework.stereotype.Service
-import java.time.LocalDateTime
+import java.time.LocalDateTime.now
 
 @Service
 class SnacksService(val snacksRepository: SnacksRepository) {
@@ -14,13 +14,15 @@ class SnacksService(val snacksRepository: SnacksRepository) {
     }
 
     private fun proposeNewSnack(): Snack {
-        TODO("Not yet implemented")
+        return Snack("plank", null)
     }
 
     private fun itsTimeForANewSnack(): Boolean {
         return snacksRepository.findByDoneNotNullOrderByDoneDesc()
-            .firstOrNull()
-            ?.done
-            ?.isBefore(LocalDateTime.now().minusMinutes(30)) == true
+            .firstOrNull { snack: Snack ->
+                snack.done != null
+                        && snack.done.isAfter(now().minusMinutes(30))
+            } == null
+
     }
 }

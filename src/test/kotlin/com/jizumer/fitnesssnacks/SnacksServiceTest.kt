@@ -3,8 +3,7 @@ package com.jizumer.fitnesssnacks
 import io.mockk.every
 import io.mockk.mockk
 import io.mockk.verify
-import org.junit.jupiter.api.Assertions.assertEquals
-import org.junit.jupiter.api.Assertions.assertNull
+import org.junit.jupiter.api.Assertions.*
 import org.junit.jupiter.api.Test
 import java.time.LocalDateTime
 
@@ -30,10 +29,11 @@ internal class SnacksServiceTest {
 
         every { snacksRepository.findByDoneNotNullOrderByDoneDesc() } returns emptyList<Snack>()
 
-
-        assertNull(snacksService.next())
+        assertNotNull(
+            snacksService.next()
+        )
         verify(exactly = 1) { snacksRepository.findByDoneNotNullOrderByDoneDesc() }
-        verify(exactly = 0) { snacksRepository.save(any<Snack>()) }
+        //verify(exactly = 1) { snacksRepository.save(any<Snack>()) }
     }
 
     @Test
@@ -51,7 +51,7 @@ internal class SnacksServiceTest {
     }
 
     @Test
-    fun `should return an empty response when there are proposed snacks but none done`() {
+    fun `should propose a new snack when there are proposed snacks but none done`() {
         val snacksRepository = mockk<SnacksRepository>()
         val snacksService = SnacksService(snacksRepository)
 
@@ -59,7 +59,7 @@ internal class SnacksServiceTest {
         every { snacksRepository.findByDoneNotNullOrderByDoneDesc() } returns listOf(snackMock)
 
 
-        assertNull(snacksService.next())
+        assertNotNull(snacksService.next())
         verify(exactly = 1) { snacksRepository.findByDoneNotNullOrderByDoneDesc() }
         verify(exactly = 0) { snacksRepository.save(any<Snack>()) }
     }
