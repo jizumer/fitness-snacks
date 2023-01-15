@@ -49,4 +49,18 @@ internal class SnacksServiceTest {
         verify(exactly = 1) { snacksRepository.findByDoneNotNullOrderByDoneDesc() }
         verify(exactly = 0) { snacksRepository.save(any<Snack>()) }
     }
+
+    @Test
+    fun `should return an empty response when there are proposed snacks but none done`() {
+        val snacksRepository = mockk<SnacksRepository>()
+        val snacksService = SnacksService(snacksRepository)
+
+        val snackMock = Snack("some-type", null)
+        every { snacksRepository.findByDoneNotNullOrderByDoneDesc() } returns listOf(snackMock)
+
+
+        assertNull(snacksService.next())
+        verify(exactly = 1) { snacksRepository.findByDoneNotNullOrderByDoneDesc() }
+        verify(exactly = 0) { snacksRepository.save(any<Snack>()) }
+    }
 }
