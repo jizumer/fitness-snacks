@@ -5,4 +5,5 @@ import org.springframework.data.repository.CrudRepository
 interface SnacksRepository : CrudRepository<Snack, String> {
 
     fun findByDoneNotNullOrderByDoneDesc(): List<Snack>
+    fun findByDoneNullOrderByDoneDesc(): List<Snack>
 }

@@ -28,6 +28,8 @@ internal class SnacksServiceTest {
         val snacksService = SnacksService(snacksRepository)
 
         every { snacksRepository.findByDoneNotNullOrderByDoneDesc() } returns emptyList<Snack>()
+        every { snacksRepository.findByDoneNullOrderByDoneDesc() } returns emptyList<Snack>()
+
 
         assertNotNull(
             snacksService.next()
@@ -56,10 +58,29 @@ internal class SnacksServiceTest {
         val snacksService = SnacksService(snacksRepository)
 
         val snackMock = Snack("some-type", null)
-        every { snacksRepository.findByDoneNotNullOrderByDoneDesc() } returns listOf(snackMock)
+        every { snacksRepository.findByDoneNullOrderByDoneDesc() } returns listOf(snackMock)
+        every { snacksRepository.findByDoneNotNullOrderByDoneDesc() } returns emptyList()
 
 
         assertNotNull(snacksService.next())
+        verify(exactly = 1) { snacksRepository.findByDoneNotNullOrderByDoneDesc() }
+        verify(exactly = 0) { snacksRepository.save(any<Snack>()) }
+    }
+
+    @Test
+    fun `should propose last proposed snack when there is a proposed snacks but not yet done`() {
+        val snacksRepository = mockk<SnacksRepository>()
+        val snacksService = SnacksService(snacksRepository)
+        val done = Snack("some-type", LocalDateTime.now().minusMinutes(40))
+        val notDone = Snack("another-type", null)
+        every { snacksRepository.findByDoneNotNullOrderByDoneDesc() } returns listOf(done)
+        every { snacksRepository.findByDoneNullOrderByDoneDesc() } returns listOf(notDone)
+
+
+        assertEquals(
+            snacksService.next(),
+            notDone
+        )
         verify(exactly = 1) { snacksRepository.findByDoneNotNullOrderByDoneDesc() }
         verify(exactly = 0) { snacksRepository.save(any<Snack>()) }
     }

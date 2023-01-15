@@ -8,14 +8,18 @@ class SnacksService(val snacksRepository: SnacksRepository) {
     fun findAll(): List<Snack> = snacksRepository.findAll().toList()
     fun next(): Snack? {
         if (itsTimeForANewSnack()) {
-            return proposeNewSnack()
+            return proposeSnack()
         }
         return null
     }
 
-    private fun proposeNewSnack(): Snack {
-        return Snack("plank", null)
+    private fun proposeSnack(): Snack {
+        return lastNotDone() ?: proposeNewSnack()
     }
+
+    private fun proposeNewSnack(): Snack = Snack("plank", null)
+
+    private fun lastNotDone(): Snack? = snacksRepository.findByDoneNullOrderByDoneDesc().firstOrNull()
 
     private fun itsTimeForANewSnack(): Boolean {
         return snacksRepository.findByDoneNotNullOrderByDoneDesc()
