@@ -28,12 +28,25 @@ internal class SnacksServiceTest {
         val snacksRepository = mockk<SnacksRepository>()
         val snacksService = SnacksService(snacksRepository)
 
-        val snacksMock = emptyList<Snack>()
-        every { snacksRepository.findAll() } returns snacksMock
+        every { snacksRepository.findByDoneNotNullOrderByDoneDesc() } returns emptyList<Snack>()
 
 
         assertNull(snacksService.next())
-        verify(exactly = 1) { snacksRepository.findAll() }
+        verify(exactly = 1) { snacksRepository.findByDoneNotNullOrderByDoneDesc() }
+        verify(exactly = 0) { snacksRepository.save(any<Snack>()) }
+    }
+
+    @Test
+    fun `should return an empty response when the last snack was done less than 30 minutes ago`() {
+        val snacksRepository = mockk<SnacksRepository>()
+        val snacksService = SnacksService(snacksRepository)
+
+        val snackMock = Snack("some-type", LocalDateTime.now().minusMinutes(29))
+        every { snacksRepository.findByDoneNotNullOrderByDoneDesc() } returns listOf(snackMock)
+
+
+        assertNull(snacksService.next())
+        verify(exactly = 1) { snacksRepository.findByDoneNotNullOrderByDoneDesc() }
         verify(exactly = 0) { snacksRepository.save(any<Snack>()) }
     }
 }
